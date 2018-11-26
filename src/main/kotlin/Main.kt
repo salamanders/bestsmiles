@@ -1,17 +1,52 @@
 import mu.KotlinLogging
-import org.opencv.core.Core
 import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.dnn.Dnn
+import org.opencv.dnn.Net
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
+import java.awt.Rectangle
 import java.nio.file.Paths
 
 
 private val logger = KotlinLogging.logger {}
 
+fun findStuff(net: Net, filename: String): List<Pair<Rectangle, String>> {
 
-// https://github.com/opencv/opencv/blob/master/samples/android/mobilenet-objdetect/src/org/opencv/samples/opencv_mobilenet/MainActivity.java
+    val frame = Imgcodecs.imread(filename)!!
+    val frameWidth = frame.cols()
+    val frameHeight = frame.rows()
+
+    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2RGB) // Strip out any alpha
+
+    // TODO: This looks like it needs plenty of knowledge.
+    //val blob = Dnn.blobFromImage(frame, 1.0, Size(IN_WIDTH, IN_HEIGHT), Scalar(MEAN_VAL, MEAN_VAL, MEAN_VAL), /*swapRB*/false, /*crop*/false)
+    val blob = Dnn.blobFromImage(frame)!!
+    logger.info { "Made blob." }
+
+    net.setInput(blob)
+    val detectionsUnshaped = net.forward()
+    detectionsUnshaped.reshape(1, detectionsUnshaped.total().toInt() / 7)!!.let { detections ->
+        logger.info { "Got detections: ${detections.rows()}" }
+        return (0 until detections.rows()).mapNotNull { i ->
+            if (detections.get(i, 2)[0] < 0.2) {
+                null
+            } else {
+                val classId = detections.get(i, 1)[0].toInt()
+                val left = (detections.get(i, 3)[0] * frameWidth).toInt()
+                val top = (detections.get(i, 4)[0] * frameHeight).toInt()
+                val right = (detections.get(i, 5)[0] * frameWidth).toInt()
+                val bottom = (detections.get(i, 6)[0] * frameHeight).toInt()
+                // Draw rectangle around detected object.
+                Imgproc.rectangle(frame, Point(left.toDouble(), top.toDouble()), Point(right.toDouble(), bottom.toDouble()),
+                        Scalar(0.0, 255.0, 0.0))
+                Pair(Rectangle(left, top, right - left, bottom - top), "face")
+            }
+        }
+    }
+}
+
+
 fun main() {
     logger.info { "Starting app." }
 
@@ -29,49 +64,7 @@ fun main() {
     //val net = Dnn.readNetFromCaffe("/Users/benhill/Documents/workspace/bestsmiles/MobileNetSSD_deploy.prototxt", "/Users/benhill/Documents/workspace/bestsmiles/mobilenet_iter_73000.caffemodel")!!
     logger.info { "Network loaded successfully" }
 
-    val IN_SCALE_FACTOR = 0.007843
-    val MEAN_VAL = 127.5
-    val THRESHOLD = 0.2
     // Get a new frame
-
-
-    val frame = Imgcodecs.imread("DSC02953.JPG")!!
-
-    //Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2RGB)
-    // Forward image through network.
-
-    val blob = Dnn.blobFromImage(frame)!!
-    logger.info { "Made blob." }
-
-    //val blob = Dnn.blobFromImage(frame, 1.0, Size(IN_WIDTH, IN_HEIGHT), Scalar(MEAN_VAL, MEAN_VAL, MEAN_VAL), /*swapRB*/false, /*crop*/false)
-    net.setInput(blob)
-    val detectionsUnshaped = net.forward()
-    val cols = frame.cols()
-    val rows = frame.rows()
-    val detections = detectionsUnshaped.reshape(1, detectionsUnshaped.total().toInt() / 7)!!
-    logger.info { "Got detections: ${detections.rows()}" }
-    for (i in 0 until detections.rows()) {
-        val confidence = detections.get(i, 2)[0]
-        if (confidence > THRESHOLD) {
-            val classId = detections.get(i, 1)[0].toInt()
-            val left = (detections.get(i, 3)[0] * cols).toInt()
-            val top = (detections.get(i, 4)[0] * rows).toInt()
-            val right = (detections.get(i, 5)[0] * cols).toInt()
-            val bottom = (detections.get(i, 6)[0] * rows).toInt()
-            logger.info { "Detection $i: ($left,$top) = $classId:$confidence" }
-            // Draw rectangle around detected object.
-            Imgproc.rectangle(frame, Point(left.toDouble(), top.toDouble()), Point(right.toDouble(), bottom.toDouble()),
-                    Scalar(0.0, 255.0, 0.0))
-            val label = "$classId:$confidence"
-            val baseLine = IntArray(1)
-            val labelSize = Imgproc.getTextSize(label, Core.FONT_HERSHEY_SIMPLEX, 0.5, 1, baseLine)
-            // Draw background for label.
-            Imgproc.rectangle(frame, Point(left.toDouble(), top - labelSize.height),
-                    Point(left + labelSize.width, top + baseLine[0].toDouble()),
-                    Scalar(255.0, 255.0, 255.0))
-            // Write class name and confidence.
-            Imgproc.putText(frame, label, Point(left.toDouble(), top.toDouble()),
-                    Core.FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0.0, 0.0, 0.0))
-        }
-    }
+    val faces = findStuff(net, "DSC02953.JPG")
+    println(faces.joinToString())
 }

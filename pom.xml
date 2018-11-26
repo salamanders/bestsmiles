@@ -67,16 +67,6 @@
             <version>3.4.2-0</version>
         </dependency>
 
-        <!-- Trying to get opencv working -->
-        <!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/opencv -->
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>opencv</artifactId>
-            <version>3.4.3-1.4.3</version>
-            <classifier>macosx-x86_64</classifier>
-        </dependency>
-
-
         <!-- for Google Vision -->
         <dependency>
             <groupId>com.google.apis</groupId>
