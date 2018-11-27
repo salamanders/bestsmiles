@@ -33,6 +33,12 @@
 
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
 
@@ -40,13 +46,6 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>27.0-jre</version>
         </dependency>
 
         <dependency>
@@ -67,46 +66,25 @@
             <version>1.6.10</version>
         </dependency>
 
+
+        <!-- for DNN -->
         <dependency>
-            <groupId>org.openpnp</groupId>
-            <artifactId>opencv</artifactId>
-            <version>3.4.2-0</version>
+            <groupId>com.github.tzolov</groupId>
+            <artifactId>mtcnn-java</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
 
-        <!-- for Google Vision -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-vision</artifactId>
-            <version>v1-rev20181031-1.27.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-vision</artifactId>
-            <version>1.51.0</version>
-        </dependency>
-
-        <!-- For mtcnn -->
-        <dependency>
-            <groupId>net.tzolov.cv</groupId>
-            <artifactId>mtcnn</artifactId>
-            <version>0.0.5-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
             <version>1.4.3</version>
         </dependency>
+
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv-platform</artifactId>
             <version>1.4.3</version>
         </dependency>
-        <dependency>
-            <groupId>org.bytedeco.javacpp-presets</groupId>
-            <artifactId>ffmpeg</artifactId>
-            <version>4.0.2-1.4.3</version>
-        </dependency>
-
 
     </dependencies>
 
