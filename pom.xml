@@ -18,11 +18,6 @@
         <kotlin.compiler.apiVersion>1.3</kotlin.compiler.apiVersion>
         <kotlin.languageVersion>1.3</kotlin.languageVersion>
         <jackson.version>2.9.7</jackson.version>
-        <nd4j.version>1.0.0-beta3</nd4j.version>
-        <openblas.version>0.3.3</openblas.version>
-        <javacpp-presets.version>1.4.3</javacpp-presets.version>
-        <mkl.version>2019.0</mkl.version>
-        <mkl-dnn.version>0.16</mkl-dnn.version>
 
         <java.version>1.8</java.version>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
@@ -33,11 +28,20 @@
 
     </properties>
 
+
     <repositories>
+        <!-- Required or else get a "Java2DNativeImageLoader class not found." -->
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+
+        <!-- for SNAPSHOT -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
     </repositories>
 
     <dependencies>
@@ -68,22 +72,19 @@
 
 
         <!-- for DNN -->
+        <!--
+        <dependency>
+            <groupId>net.tzolov.cv</groupId>
+            <artifactId>mtcnn</artifactId>
+            <version>0.0.4</version>
+        </dependency>
+        -->
+
+        <!-- EXPERIMENTAL -->
         <dependency>
             <groupId>com.github.tzolov</groupId>
             <artifactId>mtcnn-java</artifactId>
             <version>master-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv</artifactId>
-            <version>1.4.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
-            <version>1.4.3</version>
         </dependency>
 
     </dependencies>
